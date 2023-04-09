@@ -3,10 +3,6 @@ int Verde = 11;    // Led 11
 int Amarelo = 12;  // Led 12
 int Vermelho = 13; // Led 13
 
-int X;	// Entrada A
-int Y;	// Entrada B
-int S;	// Saída S
-
 int Not(int x) {         // Porta not com máscara 0b1111 para obter not lógico
     return (~x & 0b1111);    
 }
@@ -114,7 +110,7 @@ void mostrarLed(String output) {
 
 void mostrarMemoria() {
     Serial.print("->|");
-    for(int i = 0; i <= qtd_cods + 4;i++){
+    for(int i = 0; i < qtd_cods + 4;i++){
         Serial.print(memoria[i]+"|");
     }
     Serial.print("\n");
@@ -134,8 +130,13 @@ void loop()
 {
     if (Serial.available()){
 	entrada = Serial.readString(); // Leitura da entrada do usuário
-        qtd_cods = entrada.length()/4; // Calcula a quantidade de códigos presentes na entrada
-
+        qtd_cods = entrada.length()/4 + 1; // Calcula a quantidade de códigos presentes na entrada
+      
+        // Testar se ultrapassa memoria
+        if (qtd_cods > 96) {
+            qtd_cods = 96;
+        }
+      
       	// Inicializa a Memoria 
         memoria[0] = ponteiro;
         memoria[1] = "0";
@@ -144,7 +145,7 @@ void loop()
 
         int inferior = 0; 
         int superior = 3;
-        for (int j = 4; j < 100; j++){
+        for (int j = 4; j < qtd_cods + 4; j++){
             memoria[j] = entrada.substring(inferior,superior);
             inferior += 4;
             superior += 4;
@@ -155,7 +156,7 @@ void loop()
         delay(2000);
        	
       	// Loop que percorre o vetor memória armazenando as instruções
-      	for(int j = 4; j <= qtd_cods + 4; j++){
+      	for(int j = 4; j < qtd_cods + 4; j++){
 
             x    = memoria[j][0]; // Pega o valor de x da instrução sendo executada
             y    = memoria[j][1]; // Pega o valor de y da instrução sendo executada
